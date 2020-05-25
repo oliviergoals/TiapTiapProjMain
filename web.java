@@ -14,10 +14,10 @@ import java.io.IOException;
 
 public class web {
     public static ChromeDriver driver;
-    public static String chrome_path = "/Users/Olivier/Desktop/TiapTiapProj/chromedriver";
+    public static String chrome_path = "/Users/Olivier/Desktop/TiapTiapProjMain/chromedriver";
     public static String link = "https://web.whatsapp.com/";
-    public static String extension_path = "/Users/Olivier/Desktop/TiapTiapProj/InTouchAppPhoneContactsDataSaver.crx";
-    public static String csv_path = "/Users/Olivier/Desktop/TiapTiapProj/test.csv";
+    public static String extension_path = "/Users/Olivier/Desktop/TiapTiapProjMain/InTouchAppPhoneContactsDataSaver.crx";
+    public static String csv_path = "/Users/Olivier/Desktop/TiapTiapProjMain/test.csv";
     //public static Actions a;
     public static int count =0;
 
