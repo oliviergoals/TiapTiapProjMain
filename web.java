@@ -14,10 +14,10 @@ import java.io.IOException;
 
 public class web {
     public static ChromeDriver driver;
-    public static String chrome_path = "/Users/Olivier/Desktop/TiapTiapProjMain/chromedriver";
+    public static String chrome_path = "./chromedriver";
     public static String link = "https://web.whatsapp.com/";
-    public static String extension_path = "/Users/Olivier/Desktop/TiapTiapProjMain/InTouchAppPhoneContactsDataSaver.crx";
-    public static String csv_path = "/Users/Olivier/Desktop/TiapTiapProjMain/test.csv";
+    public static String extension_path = "./InTouchAppPhoneContactsDataSaver.crx";
+    public static String csv_path = "./test.csv";
     //public static Actions a;
     public static int count =0;
 
@@ -81,10 +81,10 @@ public class web {
             System.out.println(name);
             System.out.println(phone_number);
             String final_message = templating(data, header);
-            // System.out.println(final_message); UN-COMMENT IF YOU WANT TO TEST MESSGAE
+            System.out.println(final_message); //UN-COMMENT IF YOU WANT TO TEST MESSGAE
             // BEFORE SENDING
 
-            sendMessage(name, phone_number, final_message);
+            //sendMessage(name, phone_number, final_message);
             count++;
         }
         csvReader.close();
@@ -134,15 +134,17 @@ public class web {
     }
 
     public static String templating(String[] data, String[] header) {
-        String name, time_stamp, qty, item_name, price,address, delivery_cost, delivery_date;
+        String name, qty, item_name, price,address, delivery_cost, delivery_date, message,recipient_name;
         //ArrayList<String> order_line = new ArrayList<String>();
         double total_cost = 0;
         String orderline = "";
-        address = data[21];
-        delivery_date = data[19];
+        recipient_name = data[24];
+        address = data[21]+ " " + data[22]; 
+        System.out.println(address);
+        delivery_date = data[19].substring(1,data[19].length()-1);
         name = data[3];
-        time_stamp = data[0];
-        delivery_cost = "6.50";
+        delivery_cost = data[17];
+        message=data[27];
         for (int i = 0; i < 10; i++){
             int index = i + 4;
             if(data[index].isEmpty()){
@@ -159,14 +161,14 @@ public class web {
         }
         total_cost += Double.parseDouble(delivery_cost);
         // String temp = String.format("THIS IS A TESTER MESSAGE PLEASE IGNORE \n Thank you for ordering with TiapTiapWithSoph, here is your order summary 🥳 - \n\nName:\n%s \n\n📆 Time of Order:\n%s \n\n📝 Order:\n%s\n\n🏡 Delivery Address:\n%s\n\n🚚 Delivery cost & date:\n$%s,%s\n\n💵 Total cost:\n%.2f\nPlease make your payment to 90089066 via paylah or paynow. Once you have made the payment, please send a screenshot to the number together with this order form to complete the order process 🎉\n",name,time_stamp,orderline,address,delivery_cost,delivery_date,total_cost);
-        String temp = String.format("THIS IS A TESTER MESSAGE PLEASE IGNORE \n Thank you for ordering with TiapTiapWithSoph <3, here is your order summary - \n\nName:\n%s \n\nTime of Order:\n%s \n\nOrder:\n%s\n\nDelivery Address:\n%s\n\nDelivery cost & date:\n$%s,%s\n\nTotal cost:\n%.2f\nPlease make your payment to 90089066 via paylah or paynow. Once you have made the payment, please send a screenshot to the number together with this order form to complete the order process <3 \n",name,time_stamp,orderline,address,delivery_cost,delivery_date,total_cost);
+        String temp = String.format("Thank you for ordering with TiapTiapWithSoph <3, here is your order summary - \n\nSender's Name:\n%s \n\nRecipient's Name:\n%s \n\nOrder:\n%s\n\nDelivery Address:\n%s\n\nDelivery cost & date:\n$%s,%s\n\nTotal cost:\n%.2f\n\nMessage:\n%s\n\nPlease make your payment to 90089066 via paylah or paynow. You can also bank transfer to POSB 051160410. Once you have made the payment, please send a screenshot to the number together with this order form to complete the order process <3 \n",name,recipient_name,orderline,address,delivery_cost,delivery_date,total_cost,message);
         //String template = "Name:\n{name}\n📆 Time of Order:\n{time_stamp}\n📝 Order:\n{qty} * (item_name) $(price)\n🏡 Delivery Address:\n{address}\n🚚 Delivery cost:\n{delivery_cost}\n💵 Total cost:\n{total_cost}\nPlease make your payment to 90089066 via paylah or paynow. Once you have made the payment, please send a screenshot to the number together with this order form to complete the order process 🎉";
         return temp;
     }
 
     
     public static void main(String[] args) throws InterruptedException, IOException, AWTException {
-        initialization();
+        // initialization();
         automate();
         System.out.println("SUCCESS");
 
