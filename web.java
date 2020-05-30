@@ -77,14 +77,14 @@ public class web {
         while ((row = csvReader.readLine()) != null) {
             String[] data = row.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
             String name = data[3];
-            String phone_number = data[25];
+            String phone_number = data[30];
             System.out.println(name);
             System.out.println(phone_number);
             String final_message = templating(data, header);
-            System.out.println(final_message); //UN-COMMENT IF YOU WANT TO TEST MESSGAE
+            // System.out.println(final_message); //UN-COMMENT IF YOU WANT TO TEST MESSGAE
             // BEFORE SENDING
 
-            //sendMessage(name, phone_number, final_message);
+            sendMessage(name, phone_number, final_message);
             count++;
         }
         csvReader.close();
@@ -134,20 +134,21 @@ public class web {
     }
 
     public static String templating(String[] data, String[] header) {
-        String name, qty, item_name, price,address, delivery_cost, delivery_date, message,recipient_name;
+        String name, qty, item_name, price,address, delivery_cost, delivery_date, message,recipient_name, delivery_type;
         //ArrayList<String> order_line = new ArrayList<String>();
         double total_cost;
         String orderline = "";
-        recipient_name = data[29];
-        address = data[26].substring(0,data[26].length())+ " " + data[27]; 
+        delivery_type = data[25];
+        recipient_name = data[4];
+        address = data[31].substring(0,data[31].length())+ " " + data[32]; 
         System.out.println(address);
-        delivery_date = data[24].substring(1,data[24].length()-1);
+        delivery_date = data[29].substring(1,data[29].length()-1);
         name = data[3];
-        delivery_cost = data[22];
-        message=data[32];
-        total_cost = Double.parseDouble(data[23]);
-        for (int i = 0; i < 15; i++){
-            int index = i + 4;
+        delivery_cost = data[27];
+        message=data[36];
+        total_cost = Double.parseDouble(data[28]);
+        for (int i = 0; i < 17; i++){
+            int index = i + 5;
             if(data[index].isEmpty()){
                 continue;
             }
@@ -169,7 +170,7 @@ public class web {
 
     
     public static void main(String[] args) throws InterruptedException, IOException, AWTException {
-        // initialization();
+        initialization();
         automate();
         System.out.println("SUCCESS");
 
