@@ -11,17 +11,46 @@ import java.awt.AWTException;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class web {
     public static ChromeDriver driver;
     public static String chrome_path = "./chromedriver";
     public static String link = "https://web.whatsapp.com/";
     public static String extension_path = "./InTouchAppPhoneContactsDataSaver.crx";
-    public static String csv_path = "./test.csv";
+    public static String menu_path = "./menu.csv";
+    public static String csv_path = "/Users/Olivier/Downloads/test030620.csv";
     //public static Actions a;
     public static int count =0;
+    public static ArrayList<menu> menu_list = new ArrayList<menu>();
 
-    public static void initialization() throws InterruptedException {
+    public static class menu{
+        public String item_name;
+        public String item_cost;
+
+        menu(String item_name, String item_cost){
+            this.item_name = item_name;
+            this.item_cost = item_cost;
+        }
+
+    }
+
+    public static void initialization() throws InterruptedException, IOException {
+        String[] menu_header;
+        String menu_row;
+
+        //To read the Menu and store in data
+        BufferedReader menu_csvReader = new BufferedReader(new FileReader(menu_path));
+        menu_header = menu_csvReader.readLine().split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+        while ((menu_row = menu_csvReader.readLine())!= null ){
+            String[] data = menu_row.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+            menu item = new menu(data[0], data[1]);
+            menu_list.add(item);
+        }
+        menu_csvReader.close();
+
+        
         System.setProperty("webdriver.chrome.driver", chrome_path);
         // WebDriver driver = new ChromeDriver();
         ChromeOptions options = new ChromeOptions();
@@ -32,65 +61,56 @@ public class web {
         //a = new Actions(driver);
         driver.get(link);
 
-        /* step 1: loading the main page and scanning QR code */
-        /* method 1 - NEED TO FIX USING TRY CATCH */
-
-        // int timeout = 0;
-        // WebElement QRcode1 = driver.findElement(By.className("zCzor"));
-        // while(QRcode1.isDisplayed() && timeout < 5){
-        // timeout++;
-        // Thread.sleep(5000);
-        // System.out.println(timeout);
-        // }
-        // if(timeout == 5){
-        // System.exit(0);
-        // }
-        // Thread.sleep(5000);
-
-        /* method 2 */
+        /* Follow code meant to give instruction on the terminal */
         Scanner myObj = new Scanner(System.in);
         System.out.println("STEP 1: Scan Whatsapp QR code \n STEP 2: Click 'Later' on Popup \n STEP 3: Click Red Extension \n STEP 4: Scan InTouchApp QR code & remove pop up by clicking else where\n STEP 5: Press Enter on Terminal");
         myObj.nextLine();
         Thread.sleep(2000);
         myObj.close();
-        /*
-         * step 2: Click later button on pop up & scan inTouch QR to log in & check for
-         * Log in
-         */
-        // WebElement laterButt = driver.findElement(By.xpath("/html/body/div[3]/div[2]/div[2]/div[2]"));
-        // if (laterButt.isDisplayed()) {
-        //     laterButt.click();
-        //     Thread.sleep(1000);
-        //     System.out.println("clicked");
-        // } else {
-        //     System.out.println("error - cannot find later button");
-        //     System.exit(0);
-        // }
+            
+        }
 
-    }
 
     public static void automate() throws InterruptedException, IOException, AWTException {
         String[] header;
         String row;
+
+        // To Read the Order Sheet
         BufferedReader csvReader = new BufferedReader(new FileReader(csv_path));
         header = csvReader.readLine().split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         while ((row = csvReader.readLine()) != null) {
+            //Extracting data off of each line
             String[] data = row.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-            String name = data[3];
-            String phone_number = data[30];
+        
+            //Taking the important details, such as 1) Name 2) Phone Number 3) Order History
+            String name = data[Arrays.asList(header).indexOf("Sender's Name")];
+            String phone_number = data[Arrays.asList(header).indexOf("☎️ Phone Number")];
+            String order_history = data[Arrays.asList(header).indexOf("Is this your first time ordering from tiaptiapwithsoph?")];
+            
+            //Double checking for name and phone_number
             System.out.println(name);
             System.out.println(phone_number);
             String final_message = templating(data, header);
-            // System.out.println(final_message); //UN-COMMENT IF YOU WANT TO TEST MESSGAE
-            // BEFORE SENDING
+            
+            System.out.println(final_message); //UN-COMMENT IF YOU WANT TO TEST MESSGAE BEFORE SENDING
+            
+            // Separating between old and new contacts     
+            if(order_history.equals("No")){
+                System.out.println("Creating New contact");
+                sendMessage_new(name, phone_number, final_message);   //UN-COMMENT WHEN YOU WANT TO SEND
+            }
 
-            sendMessage(name, phone_number, final_message);
+            else if(order_history.equals("Yes")){
+                System.out.println("Searching through old contacts");
+                sendMessage_old(name, phone_number, final_message);
+            }
+
             count++;
         }
         csvReader.close();
     }
 
-    public static void sendMessage(String name, String phone_number, String message)
+    public static void sendMessage_new(String name, String phone_number, String message)
             throws InterruptedException, AWTException {
 
         WebElement addContact = driver.findElement(By.xpath("/html/body/div[1]/div[1]/div/div[3]/div/header/div[2]/div/span/div[2]/div/span[1]/img"));
@@ -133,39 +153,77 @@ public class web {
 
     }
 
+    public static void sendMessage_old(String name, String phone_number, String message)
+            throws InterruptedException, AWTException {
+
+        WebElement searchContact = driver.findElement(By.xpath("//*[@id='side']/div[4]/div/label/div/div[2]"));
+        searchContact.sendKeys(phone_number);
+        Thread.sleep(3000);
+        
+        WebElement selectContact = driver.findElement(By.xpath("//*[@id='pane-side']/div[1]/div/div/div[5]/div"));
+        selectContact.click();
+        Thread.sleep(1000);
+        
+        WebElement insertText = driver.findElement(By.xpath("/html/body/div[1]/div[1]/div/div[4]/div[3]/footer/div[1]/div[2]/div/div[2]"));
+        String[] message_split = message.split("\n");
+        for(String i : message_split ){
+            insertText.sendKeys(i);
+            insertText.sendKeys(Keys.chord(Keys.SHIFT, Keys.ENTER));
+        }
+        Thread.sleep(2000);
+        
+        //UNCOMMENT BOTTOM 2 LINES OF CODE IF YOU WANT TO CHECK EACH MESSAGE
+        //Scanner myObj2 = new Scanner(System.in);
+        //myObj2.nextLine();
+        //UNCOMMENT TOP 2 LINES OF CODE IF YOU WANT TO CHECK EACH MESSAGE
+
+        WebElement sendChat = driver.findElement(By.xpath("/html/body/div[1]/div[1]/div/div[4]/div[3]/footer/div[1]/div[3]/button"));
+        sendChat.click();
+        Thread.sleep(2000);
+        
+
+    }
+
     public static String templating(String[] data, String[] header) {
-        String name, qty, item_name, price,address, delivery_cost, delivery_date, message,recipient_name, delivery_type;
-        //ArrayList<String> order_line = new ArrayList<String>();
-        double total_cost;
-        String orderline = "";
-        delivery_type = data[25];
-        recipient_name = data[4];
-        address = data[31].substring(0,data[31].length())+ " " + data[32]; 
-        System.out.println(address);
-        delivery_date = data[29].substring(1,data[29].length()-1);
-        name = data[3];
-        delivery_cost = data[27];
-        message=data[36];
-        total_cost = Double.parseDouble(data[28]);
-        for (int i = 0; i < 17; i++){
-            int index = i + 5;
+        //initialising all the variables
+        String name, qty, item_name, price,address, delivery_cost, delivery_date, delivery_date_buffer, message_option, message,recipient_name, delivery_type, orderline,total_cost, final_message;
+        
+        //assinging values to variables in order of template
+        name = data[Arrays.asList(header).indexOf("Sender's Name")];
+        recipient_name = data[Arrays.asList(header).indexOf("Recipient's Name")];
+        orderline = "";
+        address = data[Arrays.asList(header).indexOf("🏡Address")] + " " + data[Arrays.asList(header).indexOf("📍Postal Code")]; 
+        delivery_cost = data[Arrays.asList(header).indexOf("Delivery Cost")];
+        delivery_date_buffer = data[Arrays.asList(header).indexOf("🚚 Available Dates")];
+        delivery_date = delivery_date_buffer.substring(1,delivery_date_buffer.length()-1);
+        total_cost = data[Arrays.asList(header).indexOf("Amount Payable")];
+        message_option=data[Arrays.asList(header).indexOf("📝 Message")]; //YOU MIGHT NEED TO CHANGE THIS TO "📝 Would you like to include a Message with this purchase?"
+        message = data[Arrays.asList(header).indexOf("Message to be Included:")];
+        delivery_type = data[Arrays.asList(header).indexOf("Transport")]; //NOTE: DELIVERY TYPE IS CURRENTLY (as of 030620) NOT IN THE MESSAGE
+        
+        //getting the orderline
+        for (int i = 0; i < menu_list.size(); i++){    
+            int index = Arrays.asList(header).indexOf(menu_list.get(i).item_name);
             if(data[index].isEmpty()){
                 continue;
             }
             else{
                 qty = data[index];
-                price = header[index].substring(1,3);
-                item_name = header[index].substring(8);
+                price = menu_list.get(i).item_cost;
+                item_name = header[index];
                 orderline += (qty + " * " + item_name + " $" + price + "\n");
-                // total_cost += Double.parseDouble(qty) * Double.parseDouble(price);
-                // order_line.add(qty + " * " + item_name + " " + price);
             }    
         }
-        //total_cost += Double.parseDouble(delivery_cost);
+        final_message = "";
         // String temp = String.format("THIS IS A TESTER MESSAGE PLEASE IGNORE \n Thank you for ordering with TiapTiapWithSoph, here is your order summary 🥳 - \n\nName:\n%s \n\n📆 Time of Order:\n%s \n\n📝 Order:\n%s\n\n🏡 Delivery Address:\n%s\n\n🚚 Delivery cost & date:\n$%s,%s\n\n💵 Total cost:\n%.2f\nPlease make your payment to 90089066 via paylah or paynow. Once you have made the payment, please send a screenshot to the number together with this order form to complete the order process 🎉\n",name,time_stamp,orderline,address,delivery_cost,delivery_date,total_cost);
-        String temp = String.format("Hey there! This is Nicole, Sophia's Daughter! I am contacting you on behalf of my mother to confirm your order! Thank you for ordering with TiapTiapWithSoph <3, here is your order summary - \n\nSender's Name:\n%s \n\nRecipient's Name:\n%s \n\nOrder:\n%s\n\nDelivery Address:\n%s\n\nDelivery cost & date:\n$%s,%s\n\nTotal cost:\n%.2f\n\nMessage:\n%s\n\nPlease make your payment to 90089066 via paylah or paynow. You can also bank transfer to POSB 051160410. Once you have made the payment, please send a screenshot to the number together with this order form to complete the order process <3 \n",name,recipient_name,orderline,address,delivery_cost,delivery_date,total_cost,message);
+        if(message_option.equals("Yes")){
+            final_message = String.format("Hey there! This is Nicole, Sophia's Daughter! I am contacting you on behalf of my mother to confirm your order! Thank you for ordering with TiapTiapWithSoph <3, here is your order summary - \n\nSender's Name:\n%s \n\nRecipient's Name:\n%s \n\nOrder:\n%s\n\nDelivery Address:\n%s\n\nDelivery cost & date:\n$%s,%s\n\nTotal cost:\n%s\n\nMessage:\n%s\n\nPlease make your payment to 90089066 via paylah or paynow. You can also bank transfer to POSB 051160410. Once you have made the payment, please send a screenshot to the number together with this order form to complete the order process <3 \n",name,recipient_name,orderline,address,delivery_cost,delivery_date,total_cost,message);
+        }
+        else if(message_option.equals("No")){
+            final_message = String.format("Hey there! This is Nicole, Sophia's Daughter! I am contacting you on behalf of my mother to confirm your order! Thank you for ordering with TiapTiapWithSoph <3, here is your order summary - \n\nRecipient's Name:\n%s \n\nOrder:\n%s\n\nDelivery Address:\n%s\n\nDelivery cost & date:\n$%s,%s\n\nTotal cost:\n%s\n\nPlease make your payment to 90089066 via paylah or paynow. You can also bank transfer to POSB 051160410. Once you have made the payment, please send a screenshot to the number together with this order form to complete the order process <3 \n",name,orderline,address,delivery_cost,delivery_date,total_cost);
+        }
         //String template = "Name:\n{name}\n📆 Time of Order:\n{time_stamp}\n📝 Order:\n{qty} * (item_name) $(price)\n🏡 Delivery Address:\n{address}\n🚚 Delivery cost:\n{delivery_cost}\n💵 Total cost:\n{total_cost}\nPlease make your payment to 90089066 via paylah or paynow. Once you have made the payment, please send a screenshot to the number together with this order form to complete the order process 🎉";
-        return temp;
+        return final_message;
     }
 
     
