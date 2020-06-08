@@ -19,8 +19,8 @@ public class web {
     public static String chrome_path = "./chromedriver";
     public static String link = "https://web.whatsapp.com/";
     public static String extension_path = "./InTouchAppPhoneContactsDataSaver.crx";
-    public static String menu_path = "/Users/Olivier/Downloads/menu(1).csv";
-    public static String csv_path = "/Users/Olivier/Downloads/test(1).csv";
+    public static String menu_path = "./menu.csv";
+    public static String csv_path = "./test.csv";
     //public static Actions a;
     public static int count =0;
     public static ArrayList<menu> menu_list = new ArrayList<menu>();
@@ -86,25 +86,24 @@ public class web {
             String name = data[Arrays.asList(header).indexOf("Sender's Name")];
             String phone_number = data[Arrays.asList(header).indexOf("☎️ Phone Number")];
             String order_history = data[Arrays.asList(header).indexOf("Is this your first time ordering from tiaptiapwithsoph?")];
-            
+            //System.out.println(order_history);
             //Double checking for name and phone_number
             System.out.println(name);
             System.out.println(phone_number);
             String final_message = templating(data, header);
             
-            System.out.println(final_message); //UN-COMMENT IF YOU WANT TO TEST MESSGAE BEFORE SENDING
+            //System.out.println(final_message); //UN-COMMENT IF YOU WANT TO TEST MESSGAE BEFORE SENDING
             
             // Separating between old and new contacts     
-            if(order_history.equals("No")){
+            if(order_history.equals("Yes")){
                 System.out.println("Creating New contact");
-                //sendMessage_new(name, phone_number, final_message);   //UN-COMMENT WHEN YOU WANT TO SEND
+                sendMessage_new(name, phone_number, final_message);   //UN-COMMENT WHEN YOU WANT TO SEND
             }
 
-            else if(order_history.equals("Yes")){
+            else if(order_history.equals("No")){
                 System.out.println("Searching through old contacts");
-                //sendMessage_old(name, phone_number, final_message);
+                sendMessage_old(name, phone_number, final_message);
             }
-
             count++;
         }
         csvReader.close();
@@ -112,6 +111,8 @@ public class web {
 
     public static void sendMessage_new(String name, String phone_number, String message)
             throws InterruptedException, AWTException {
+
+        //System.out.println("test");
 
         WebElement addContact = driver.findElement(By.xpath("/html/body/div[1]/div[1]/div/div[3]/div/header/div[2]/div/span/div[2]/div/span[1]/img"));
         addContact.click();
@@ -158,9 +159,10 @@ public class web {
 
         WebElement searchContact = driver.findElement(By.xpath("//*[@id='side']/div[4]/div/label/div/div[2]"));
         searchContact.sendKeys(phone_number);
-        Thread.sleep(3000);
+        Thread.sleep(4000);
         
-        WebElement selectContact = driver.findElement(By.xpath("//*[@id='pane-side']/div[1]/div/div/div[5]/div"));
+
+        WebElement selectContact = driver.findElement(By.xpath("//*[@id='pane-side']/div[1]/div/div/div[1]/div/div"));
         selectContact.click();
         Thread.sleep(1000);
         
@@ -221,10 +223,10 @@ public class web {
         final_message = "";
         // String temp = String.format("THIS IS A TESTER MESSAGE PLEASE IGNORE \n Thank you for ordering with TiapTiapWithSoph, here is your order summary 🥳 - \n\nName:\n%s \n\n📆 Time of Order:\n%s \n\n📝 Order:\n%s\n\n🏡 Delivery Address:\n%s\n\n🚚 Delivery cost & date:\n$%s,%s\n\n💵 Total cost:\n%.2f\nPlease make your payment to 90089066 via paylah or paynow. Once you have made the payment, please send a screenshot to the number together with this order form to complete the order process 🎉\n",name,time_stamp,orderline,address,delivery_cost,delivery_date,total_cost);
         if(message_option.equals("Yes")){
-            final_message = String.format("Hey there! This is Nicole, Sophia's Daughter! I am contacting you on behalf of my mother to confirm your order! Thank you for ordering with TiapTiapWithSoph <3, here is your order summary - \n\nSender's Name:\n%s \n\nRecipient's Name:\n%s \n\nOrder:\n%s\n\nDelivery Address:\n%s\n\nDelivery cost & date:\n$%s,%s\n\nTotal cost:\n$%s\n\nMessage:\n%s\n\nPlease make your payment to 90089066 via paylah or paynow. You can also bank transfer to POSB 051160410. Once you have made the payment, please send a screenshot to the number together with this order form to complete the order process <3 \n",name,recipient_name,orderline,address,delivery_cost,delivery_date,total_cost,message);
+            final_message = String.format("Hey there! Thank you for ordering with TiapTiapWithSoph <3, here is your order summary - \n\nSender's Name:\n%s \n\nRecipient's Name:\n%s \n\nOrder:\n%s\n\nDelivery Address:\n%s\n\nDelivery cost & date:\n$%s,%s\n\nTotal cost:\n$%s\n\nMessage:\n%s\n\nPlease make your payment to 90089066 via paylah or paynow. You can also bank transfer to POSB 051160410. Once you have made the payment, please send a screenshot to the number together with this order form to complete the order process <3 \n",name,recipient_name,orderline,address,delivery_cost,delivery_date,total_cost,message);
         }
         else if(message_option.equals("No")){
-            final_message = String.format("Hey there! This is Nicole, Sophia's Daughter! I am contacting you on behalf of my mother to confirm your order! Thank you for ordering with TiapTiapWithSoph <3, here is your order summary - \n\nRecipient's Name:\n%s \n\nOrder:\n%s\n\nDelivery Address:\n%s\n\nDelivery cost & date:\n$%s,%s\n\nTotal cost:\n$%s\n\nPlease make your payment to 90089066 via paylah or paynow. You can also bank transfer to POSB 051160410. Once you have made the payment, please send a screenshot to the number together with this order form to complete the order process <3 \n",name,orderline,address,delivery_cost,delivery_date,total_cost);
+            final_message = String.format("Hey there! Thank you for ordering with TiapTiapWithSoph <3, here is your order summary - \n\nRecipient's Name:\n%s \n\nOrder:\n%s\n\nDelivery Address:\n%s\n\nDelivery cost & date:\n$%s,%s\n\nTotal cost:\n$%s\n\nPlease make your payment to 90089066 via paylah or paynow. You can also bank transfer to POSB 051160410. Once you have made the payment, please send a screenshot to the number together with this order form to complete the order process <3 \n",name,orderline,address,delivery_cost,delivery_date,total_cost);
         }
         //String template = "Name:\n{name}\n📆 Time of Order:\n{time_stamp}\n📝 Order:\n{qty} * (item_name) $(price)\n🏡 Delivery Address:\n{address}\n🚚 Delivery cost:\n{delivery_cost}\n💵 Total cost:\n{total_cost}\nPlease make your payment to 90089066 via paylah or paynow. Once you have made the payment, please send a screenshot to the number together with this order form to complete the order process 🎉";
         return final_message;
