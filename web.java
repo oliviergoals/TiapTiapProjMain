@@ -10,8 +10,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
-import net.bytebuddy.asm.Advice.Exit;
-
 import java.awt.AWTException;
 import java.io.BufferedReader;
 import java.io.FileReader;
