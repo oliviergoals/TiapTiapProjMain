@@ -141,7 +141,15 @@ public class web {
         //Scanner myObj2 = new Scanner(System.in);
         //myObj2.nextLine();
         //UNCOMMENT TOP 2 LINES OF CODE IF YOU WANT TO CHECK EACH MESSAGE
-        
+        driver.findElement(By.cssSelector("span[data-icon='clip']")).click();
+        //add file to send by file path
+        driver.findElement(By.cssSelector("input[type='file']")).sendKeys("/Users/admin/Desktop/TiapTiapProjMain/promo.png");
+        Thread.sleep(2000);
+        //click to send
+        driver.findElement(By.xpath("//*[@id='app']/div/div/div[2]/div[2]/span/div/span/div/div/div[2]/span/div/div")).click();
+        Thread.sleep(3000);
+
+
         WebElement sendChat = driver.findElement(By.xpath("//*[@id='main']/footer/div[1]/div[3]/button"));
         sendChat.click();
         Thread.sleep(8000);
@@ -198,7 +206,7 @@ public class web {
     }
     
     public static void main(String[] args) throws InterruptedException, IOException, AWTException {
-        //initialization();
+        initialization();
         automate();
         System.out.println("SUCCESS");
 
