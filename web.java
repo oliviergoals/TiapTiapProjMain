@@ -141,13 +141,16 @@ public class web {
         //Scanner myObj2 = new Scanner(System.in);
         //myObj2.nextLine();
         //UNCOMMENT TOP 2 LINES OF CODE IF YOU WANT TO CHECK EACH MESSAGE
-        driver.findElement(By.cssSelector("span[data-icon='clip']")).click();
+
+        
+        // driver.findElement(By.cssSelector("span[data-icon='clip']")).click();
         //add file to send by file path
-        driver.findElement(By.cssSelector("input[type='file']")).sendKeys("/Users/admin/Desktop/TiapTiapProjMain/promo.png");
-        Thread.sleep(2000);
+        // driver.findElement(By.cssSelector("input[type='file']")).sendKeys("/Users/admin/Desktop/TiapTiapProjMain/promo.png");
+        // Thread.sleep(2000);
         //click to send
-        driver.findElement(By.xpath("//*[@id='app']/div/div/div[2]/div[2]/span/div/span/div/div/div[2]/span/div/div")).click();
-        Thread.sleep(3000);
+        // driver.findElement(By.xpath("//*[@id='app']/div/div/div[2]/div[2]/span/div/span/div/div/div[2]/span/div/div")).click();
+        // Thread.sleep(3000);
+        
 
 
         WebElement sendChat = driver.findElement(By.xpath("//*[@id='main']/footer/div[1]/div[3]/button"));
@@ -181,7 +184,7 @@ public class web {
 
         //getting the orderline
         for (int i = 0; i < menu_list.size(); i++){
-            //System.out.println(menu_list.get(i).item_name);
+            System.out.println(menu_list.get(i).item_name);
             int index = Arrays.asList(header).indexOf(menu_list.get(i).item_name);
             if(data[index].isEmpty() || data[index].equals("0")){
                 continue;
