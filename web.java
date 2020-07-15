@@ -108,7 +108,7 @@ public class web {
             
             if(phone_number.startsWith("8") || phone_number.startsWith("9")){
                 System.out.println(final_message); //UN-COMMENT IF YOU WANT TO TEST MESSGAE BEFORE SENDING
-                //sendMessage(name, phone_number, final_message);   //UN-COMMENT WHEN YOU WANT TO SEND
+                sendMessage(name, phone_number, final_message);   //UN-COMMENT WHEN YOU WANT TO SEND
             }
 
             else{
@@ -155,7 +155,7 @@ public class web {
 
         WebElement sendChat = driver.findElement(By.xpath("//*[@id='main']/footer/div[1]/div[3]/button"));
         sendChat.click();
-        Thread.sleep(8000);
+        Thread.sleep(9000);
         
 
     }
@@ -175,9 +175,9 @@ public class web {
             delivery_cost = "0";
         }
         delivery_date_buffer = data[Arrays.asList(header).indexOf("🚚 Available Dates")];
-        delivery_date = delivery_date_buffer.substring(1,delivery_date_buffer.length());
+        delivery_date = delivery_date_buffer.substring(0,delivery_date_buffer.length());
         total_cost = data[Arrays.asList(header).indexOf("Amount Payable")];
-        message_option=data[Arrays.asList(header).indexOf("📝 Message")]; //YOU MIGHT NEED TO CHANGE THIS TO "📝 Would you like to include a Message with this purchase?"
+        message_option=data[Arrays.asList(header).indexOf("Message")]; //YOU MIGHT NEED TO CHANGE THIS TO "📝 Would you like to include a Message with this purchase?"
         message = data[Arrays.asList(header).indexOf("Message to be Included:")];
         delivery_type = data[Arrays.asList(header).indexOf("Transport")]; //NOTE: DELIVERY TYPE IS CURRENTLY (as of 030620) NOT IN THE MESSAGE
         
@@ -199,10 +199,22 @@ public class web {
         final_message = "";
         // String temp = String.format("THIS IS A TESTER MESSAGE PLEASE IGNORE \n Thank you for ordering with TiapTiapWithSoph, here is your order summary 🥳 - \n\nName:\n%s \n\n📆 Time of Order:\n%s \n\n📝 Order:\n%s\n\n🏡 Delivery Address:\n%s\n\n🚚 Delivery cost & date:\n$%s,%s\n\n💵 Total cost:\n%.2f\nPlease make your payment to 90089066 via paylah or paynow. Once you have made the payment, please send a screenshot to the number together with this order form to complete the order process 🎉\n",name,time_stamp,orderline,address,delivery_cost,delivery_date,total_cost);
         if(message_option.equals("Yes")){
-            final_message = String.format(" Thank you for ordering with TiapTiapWithSoph <3, here is your order summary - \n\nSender's Name:\n%s \n\nRecipient's Name:\n%s \n\nOrder:\n%s\n\nDelivery Address:\n%s\n\nDelivery cost & date:\n$%s,%s\n\nTotal cost:\n$%s\n\nMessage:\n%s\n\nPlease make your payment to 90089066 via paylah or paynow. You can also bank transfer to POSB 051160410. Once you have made the payment, please send a screenshot to the number together with this order form to complete the order process <3 \n\n If you have picked self-collection, it can be done after 2pm! @ 10 Jalan Limau Purut 468184 \n\n If you have opted for delivery, all orders should arrive by 6pm. We unfortunately are not able to provide a narrower estimate. If you would like your order to arrive within a certain time, please contact us at 90089066 to arrange a separate delivery. Additional charges may apply.\n",name,recipient_name,orderline,address,delivery_cost,delivery_date,total_cost,message);
+            if(delivery_type.equals("Self Pick Up")){
+                final_message = String.format(" Thank you for ordering with TiapTiapWithSoph <3! Here is your order summary - \n\n*Sender's Name*\n%s\n\n*Recipient's Name:*\n%s \n\n*Order:*\n%s\n*Transport:*\n%s , %s\n\n*Total cost:*\n$%s\n\n*Message:*\n%s\n\nPlease make your payment to ```0089066``` via paylah or paynow. You can also bank transfer to POSB ```051160410```.\n\nGo directly to paylah here: https://www.dbs.com.sg/personal/mobile/paylink/index.html?tranRef=mMNADOVabj \n\nOnce payment has been made, please send a screenshot of the transfer to the number together with this order form to complete the order process <3 \n\nSelf-collection, can be done after 2pm! @ 10 Jalan Limau Purut 468184 \n",name,recipient_name,orderline,delivery_type,delivery_date,total_cost,message);
+            }
+            else if(delivery_type.equals("Delivery")){
+                final_message = String.format(" Thank you for ordering with TiapTiapWithSoph <3! Here is your order summary - \n\n*Sender's Name:*\n%s\n\n*Recipient's Name:*\n%s \n\n*Order:*\n%s\n*Delivery Address:*\n%s\n\n*Delivery cost & date:*\n$%s , %s\n\n*Total cost:*\n$%s\n\n*Message:*\n%s\n\nPlease make your payment to ```90089066``` via paylah or paynow. You can also bank transfer to POSB ```051160410```.\n\nGo directly to paylah here: https://www.dbs.com.sg/personal/mobile/paylink/index.html?tranRef=mMNADOVabj \n\nOnce payment has been made, please send a screenshot of the transfer to the number together with this order form to complete the order process <3 \n\nAll orders should arrive by 6pm.\n",name,recipient_name,orderline,address,delivery_cost,delivery_date,total_cost,message);
+            }
         }
         else if(message_option.equals("No")){
-            final_message = String.format(" Thank you for ordering with TiapTiapWithSoph <3, here is your order summary - \n\nRecipient's Name:\n%s \n\nOrder:\n%s\n\nDelivery Address:\n%s\n\nDelivery cost & date:\n$%s,%s\n\nTotal cost:\n$%s\n\nPlease make your payment to 90089066 via paylah or paynow. You can also bank transfer to POSB 051160410. Once you have made the payment, please send a screenshot to the number together with this order form to complete the order process <3 \n\n If you have picked self-collection, it can be done after 2pm! @ 10 Jalan Limau Purut 468184 \n\n If you have opted for delivery, all orders should arrive by 6pm. We unfortunately are not able to provide a narrower estimate. If you would like your order to arrive within a certain time, please contact us at 90089066 to arrange a separate delivery. Additional charges may apply.\n",name,orderline,address,delivery_cost,delivery_date,total_cost);
+            if(delivery_type.equals("Self Pick Up")){
+                final_message = String.format(" Thank you for ordering with TiapTiapWithSoph <3! Here is your order summary - \n\n*Senders Name:*\n%s\n\n*Order:*\n%s\n*Transport:*\n%s , %s\n\n*Total cost:*\n$%s\n\nPlease make your payment to ```90089066``` via paylah or paynow. You can also bank transfer to POSB ```051160410```.\n\nGo directly to paylah here: https://www.dbs.com.sg/personal/mobile/paylink/index.html?tranRef=mMNADOVabj \n\nOnce payment has been made, please send a screenshot of the transfer to the number together with this order form to complete the order process <3 \n\nSelf-collection, can be done after 2pm! @ 10 Jalan Limau Purut 468184 \n",name,orderline,delivery_type,delivery_date,total_cost);
+            }
+            else if(delivery_type.equals("Delivery")){
+                final_message = String.format(" Thank you for ordering with TiapTiapWithSoph <3! Here is your order summary - \n\n*Senders Name:*\n%s\n\n*Order:*\n%s\n*Transport:*\n%s\n\n*Delivery cost date:*\n$%s , %s\n\n*Total cost:*\n$%s\n\nPlease make your payment to ```90089066``` via paylah or paynow. You can also bank transfer to POSB ```051160410```.\n\nGo directly to paylah here: https://www.dbs.com.sg/personal/mobile/paylink/index.html?tranRef=mMNADOVabj \n\nOnce payment has been made, please send a screenshot of the transfer to the number together with this order form to complete the order process <3 \n\nAll orders should arrive by 6pm.\n",name,orderline,address,delivery_cost,delivery_date,total_cost);
+            }
+            
+
         }
         //String template = "Name:\n{name}\n📆 Time of Order:\n{time_stamp}\n📝 Order:\n{qty} * (item_name) $(price)\n🏡 Delivery Address:\n{address}\n🚚 Delivery cost:\n{delivery_cost}\n💵 Total cost:\n{total_cost}\nPlease make your payment to 90089066 via paylah or paynow. Once you have made the payment, please send a screenshot to the number together with this order form to complete the order process 🎉";
         return final_message;
